@@ -1,5 +1,8 @@
 package salar.ui;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Display;
@@ -10,8 +13,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -25,16 +27,11 @@ public class MainWindow {
 	private Text txtDirectoryPath;
 	private Text text;
 	private Label lblDirectory;
+	private Button btnProcess, btnBrowse, btnSave;
 
-	public static void main(String[] args) {
-		try {
-			MainWindow window = new MainWindow();
-			window.open();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	public void open() {
 		Display display = Display.getDefault();
 		createContents();
@@ -49,50 +46,87 @@ public class MainWindow {
 
 	protected void createContents() {
 		shell = new Shell();
-		shell.setSize(450, 270);
-		shell.setText("Salar Word Tagger (Version 2.0)");
-		shell.setLayout(new GridLayout(3, false));
+		shell.setSize(600, 400);
+		shell.setText("Salar Word Tagger (Version 1.1)");
+		shell.setLayout(new GridLayout(4, false));
 		
 		lblDirectory = new Label(shell, SWT.NONE);
 		lblDirectory.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblDirectory.setText("Directory:");
+		lblDirectory.setText("Corpus Directory:");
 		
 		txtDirectoryPath = new Text(shell, SWT.BORDER);
-		txtDirectoryPath.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
-		text = new Text(shell, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
-		GridData gd_text = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
-		gd_text.heightHint = 170;
-		text.setLayoutData(gd_text);
-		
-		Button btnLoad = new Button(shell, SWT.NONE);
-		btnLoad.addMouseListener(new MouseAdapter() {
+		txtDirectoryPath.setEditable(false);
+		txtDirectoryPath.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,1 , 1));
+						
+		btnBrowse = new Button(shell, SWT.NONE);
+		btnBrowse.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent arg0) {
 				DirectoryDialog dialog = new DirectoryDialog (shell);
 				String platform = SWT.getPlatform();
 				dialog.setFilterPath (platform.equals("win32") || platform.equals("wpf") ? "c:\\" : "/");
-				String strSelectedDir = dialog.open ();
-				ArrayList<String> posTags;
-				try {
+				try{
+					String strSelectedDir = dialog.open ();
+					txtDirectoryPath.setText(strSelectedDir);
 					text.setText("");
+					btnProcess.setEnabled(true);
+				} catch (Exception e) {
+					text.setText(e.toString());
+					btnProcess.setEnabled(false);
+				}
+			}
+		});
+		btnBrowse.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
+		btnBrowse.setText("...");
+
+		btnProcess = new Button(shell, SWT.NONE);
+		btnProcess.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent arg0) {
+				try {
+					ArrayList<String> posTags = new ArrayList<String>();
+					String strSelectedDir = txtDirectoryPath.getText();
 					posTags = SimplePOSTagger.getInstance().extractTags(strSelectedDir);
+					
 					for (String str: posTags) {
 						text.append(str + System.getProperty("line.separator"));
 					}
+
+					btnSave.setEnabled(true);
+				} catch (Exception e) {
+					text.setText(e.toString());
+					btnSave.setEnabled(false);
+				}
+			}
+		});
+		btnProcess.setEnabled(false);
+		btnProcess.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
+		btnProcess.setText("Process");
+
+		text = new Text(shell, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
+		text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+		text.setEditable(false);
+
+		btnSave = new Button(shell, SWT.NONE);
+		btnSave.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent arg0) {
+				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+				String platform = SWT.getPlatform();
+				dialog.setFilterPath (platform.equals("win32") || platform.equals("wpf") ? "c:\\" : "/");
+				String strSelectedFile = dialog.open();
+				try {
+					BufferedWriter bw = new BufferedWriter(new FileWriter(new File(strSelectedFile)));
+					bw.write(text.getText());
+					bw.close();
 				} catch (Exception e) {
 					text.setText(e.toString());
 				}
 			}
-		});
-		btnLoad.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		btnLoad.setText("Load Data");
-				new Label(shell, SWT.NONE);
-				new Label(shell, SWT.NONE);
-		
-				Button btnProcess = new Button(shell, SWT.NONE);
-				btnProcess.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-				btnProcess.setText("Process Data");
+		});		
+		btnSave.setEnabled(false);
+		btnSave.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 4, 1));
+		btnSave.setText("Save Output");
 	}
 
 }
