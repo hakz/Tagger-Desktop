@@ -74,6 +74,23 @@ public class MainWindow {
 		}
 	}
 
+	public void showDocument(Document doc) {
+		int size = doc.size();
+		if (size == -1) {
+			//TODO: print error message
+			return;
+		}
+		
+		String token;
+		String tag;
+		for (int i = 0 ; i < size ; i++) {
+			token = doc.tokens[i];
+			tag = doc.tags[i];
+			//TODO: create colorized text
+		}
+		
+	}
+	
 	protected void createContents() {
 		shell = new Shell();
 		shell.setSize(600, 400);

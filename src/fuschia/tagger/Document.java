@@ -4,8 +4,8 @@ public class Document {
 	String id;
 	String filePath;
 	String fileName;
-	String[] tokens;
-	String[] tags;
+	public String[] tokens;
+	public String[] tags;
 	
 	enum gender {Male, Female};
 	
@@ -15,6 +15,14 @@ public class Document {
 
 		this.tags = new String[tags.length];
 		System.arraycopy(tags, 0, this.tags, 0, tags.length);
+	}
+	
+	public int size() {
+		if (tokens == null
+				|| tags == null
+				|| tokens.length != tags.length )
+			return -1;
+		return tokens.length;
 	}
 	
 }
