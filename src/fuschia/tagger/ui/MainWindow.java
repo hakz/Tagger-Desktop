@@ -54,13 +54,14 @@ public class MainWindow {
 	private TabItem tbtmQuery;
 	private Composite composite_1;
 	private Label lblIds;
-	private Text text_1;
-	private Button btnNewButton;
+	private Text txtQuery;
+	private Button btnSearch;
 	private Label lblNewLabel;
 	private Label lblResults;
 	private StyledText styledText;
 	TextStyle normalStyle = new TextStyle();
 	TextStyle tagStyle = new TextStyle();
+	private Map<String, Document> taggerResults;
 	
 	/**
 	 * @wbp.parser.entryPoint
@@ -176,20 +177,18 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent arg0) {
 				try {
 					String strSelectedDir = txtDirectoryPath.getText();
-					Map<String, Document> posTags = MaxentPOSTagger.INSTANCE.extractTags(strSelectedDir);
+					taggerResults = MaxentPOSTagger.INSTANCE.extractTags(strSelectedDir);
 					text.append(strSelectedDir + System.getProperty("line.separator"));
 					text.append("---------"  + System.getProperty("line.separator"));
-					text.append(posTags.size()  + System.getProperty("line.separator"));
+					text.append(taggerResults.size()  + System.getProperty("line.separator"));
 
-
-					//for (String str: posTags.keySet()) {
-					//	text.append(str + System.getProperty("line.separator"));
-					//}
 
 					btnSave.setEnabled(true);
+					btnSearch.setEnabled(true);
 				} catch (Exception e) {
 					text.setText(e.toString());
 					btnSave.setEnabled(false);
+					btnSearch.setEnabled(false);
 				}
 			}
 		});
@@ -238,18 +237,25 @@ public class MainWindow {
 
 		lblIds = new Label(composite_1, SWT.NONE);
 		lblIds.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblIds.setText("ID(s):");
+		lblIds.setText("ID:");
 
-		text_1 = new Text(composite_1, SWT.BORDER);
-		text_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txtQuery = new Text(composite_1, SWT.BORDER);
+		txtQuery.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-		btnNewButton = new Button(composite_1, SWT.NONE);
-		btnNewButton.addSelectionListener(new SelectionAdapter() {
+		btnSearch = new Button(composite_1, SWT.NONE);
+		btnSearch.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+				String key = txtQuery.getText().trim();
+				if (key.length() > 0) {
+					Document doc = taggerResults.get(key);
+					showDocument(doc);
+				} else {
+					showDocument(null);
+				}
 			}
 		});
-		btnNewButton.setText("Search");
+		btnSearch.setText("Search");
 		new Label(composite_1, SWT.NONE);
 
 		lblNewLabel = new Label(composite_1, SWT.NONE);
@@ -265,9 +271,7 @@ public class MainWindow {
 		new Label(composite_1, SWT.NONE);
 		
 		styledText = new StyledText(composite_1, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP);
-		styledText.setText("sddf <span color=red>dfsh</color> dbjsdhfjs jh df");
 		styledText.setIndent(3);
-		styledText.setMarginColor(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		styledText.setLeftMargin(10);
 		styledText.setEditable(false);
 		styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
