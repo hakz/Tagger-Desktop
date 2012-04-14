@@ -53,7 +53,7 @@ public class MaxentPOSTagger implements POSTagger{
 			//POSSample sample = new POSSample(tokens, tags);
 			//String[] posTags = sample.getTags();
 
-			results.put(file.getName(), new Document(file.getName(), tokens, tags));
+			results.put(file.getName().substring(0, file.getName().length() - 4), new Document(file.getName(), tokens, tags));
 		}
 
 		return results;
