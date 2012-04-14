@@ -11,7 +11,7 @@ public class Document {
 	
 	public Document(String id, String[] tokens, String[] tags) {
 		this.tokens = new String[tokens.length];
-		System.arraycopy(tags, 0, this.tokens, 0, tokens.length);
+		System.arraycopy(tokens, 0, this.tokens, 0, tokens.length);
 
 		this.tags = new String[tags.length];
 		System.arraycopy(tags, 0, this.tags, 0, tags.length);
