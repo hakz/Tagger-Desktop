@@ -27,6 +27,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -35,6 +36,8 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import fuschia.tagger.MaxentPOSTagger;
 import fuschia.tagger.Document;
+
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 
 public class MainWindow {
@@ -75,18 +78,51 @@ public class MainWindow {
 	}
 
 	public void showDocument(Document doc) {
-		int size = doc.size();
+
+		int size = -1;
+		
+		if (doc != null )
+		{
+			size = doc.size();
+		}
+				
+		StyleRange styleRange = null;
+
 		if (size == -1) {
-			//TODO: print error message
+
+			styledText.setText("Error!");
+
+			styleRange = new StyleRange();
+			styleRange.start = 0;
+			styleRange.length = styledText.getText().length();
+			styleRange.foreground = SWTResourceManager.getColor(255, 0, 0);
+			styleRange.fontStyle = SWT.BOLD | SWT.ITALIC;
+			styledText.setStyleRange(styleRange);
+			
 			return;
 		}
 		
-		String token;
-		String tag;
+		styledText.setText("");
 		for (int i = 0 ; i < size ; i++) {
-			token = doc.tokens[i];
-			tag = doc.tags[i];
-			//TODO: create colorized text
+
+			// TOKEN
+			styledText.append(doc.tokens[i] + " ");
+			styleRange = new StyleRange();
+			styleRange.start = styledText.getText().length() - doc.tokens[i].length() - 1;
+			styleRange.length = doc.tokens[i].length();
+			styleRange.foreground = SWTResourceManager.getColor(0, 0, 0);
+			styleRange.fontStyle = SWT.NORMAL;
+			styledText.setStyleRange(styleRange);
+			
+			// TAG
+			styledText.append(doc.tags[i] + " ");
+			styleRange = new StyleRange();
+			styleRange.start = styledText.getText().length() - doc.tags[i].length() - 1;
+			styleRange.length = doc.tags[i].length();
+			styleRange.foreground = SWTResourceManager.getColor(255, 0, 0);
+			styleRange.fontStyle = SWT.ITALIC | SWT.BOLD;
+			styledText.setStyleRange(styleRange);
+
 		}
 		
 	}
@@ -235,6 +271,12 @@ public class MainWindow {
 		styledText.setLeftMargin(10);
 		styledText.setEditable(false);
 		styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+		
+		/** TEST */
+		// String[] toks = {"token1","tokenTwo", "TokenThree"};
+		// String[] tgs = {"JJ","SS","QQ"};
+		// Document doc = new Document("test", toks, tgs);
+		// showDocument(doc);
 	}
 
 }
