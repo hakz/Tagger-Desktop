@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MaxentPOSTagger implements POSTagger{
 	
@@ -37,7 +39,9 @@ public class MaxentPOSTagger implements POSTagger{
 			if (!file.exists())
 				continue;
 
-			//TODO: check if filename is correct, otherwise continue to the next one
+			String filenameRegex = "[A-Z]{2,3}\\d{1,3}\\.txt";
+			if ( !Pattern.matches(filenameRegex, file.getName()))
+				continue;
 			
 			Scanner lineScanner = new Scanner(new FileReader(file));
 
@@ -51,12 +55,10 @@ public class MaxentPOSTagger implements POSTagger{
 			
 			String tokens[] = WhitespaceTokenizer.INSTANCE.tokenize(txt);
 			String[] tags = tagger.tag(tokens);	
-			POSSample sample = new POSSample(tokens, tags);
-			String[] posTags = sample.getTags();
-			
-			System.out.print("> " + file.getName() + " : ");
-			System.out.println(posTags[0]);
-			results.put(file.getName(), new Document(file.getName(), posTags));
+			//POSSample sample = new POSSample(tokens, tags);
+			//String[] posTags = sample.getTags();
+
+			results.put(file.getName(), new Document(file.getName(), tokens, tags));
 		}
 
 		return results;

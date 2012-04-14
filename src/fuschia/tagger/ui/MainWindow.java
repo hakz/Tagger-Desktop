@@ -27,6 +27,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.widgets.Table;
@@ -34,6 +35,7 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import fuschia.tagger.MaxentPOSTagger;
 import fuschia.tagger.Document;
+import org.eclipse.swt.custom.StyledText;
 
 public class MainWindow {
 
@@ -53,9 +55,10 @@ public class MainWindow {
 	private Button btnNewButton;
 	private Label lblNewLabel;
 	private Label lblResults;
-	private Table table;
-	private TableColumn tblclmnId;
-
+	private StyledText styledText;
+	TextStyle normalStyle = new TextStyle();
+	TextStyle tagStyle = new TextStyle();
+	
 	/**
 	 * @wbp.parser.entryPoint
 	 */
@@ -87,7 +90,7 @@ public class MainWindow {
 		composite.setLayout(new GridLayout(4, false));
 
 		lblDirectory = new Label(composite, SWT.NONE);
-		lblDirectory.setText("Questionnaires:");
+		lblDirectory.setText("Corpus Directory");
 
 		txtDirectoryPath = new Text(composite, SWT.BORDER);
 		txtDirectoryPath.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -207,16 +210,14 @@ public class MainWindow {
 		lblResults.setText("Results:");
 		new Label(composite_1, SWT.NONE);
 		new Label(composite_1, SWT.NONE);
-
-		table = new Table(composite_1, SWT.BORDER | SWT.FULL_SELECTION);
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
-
-		tblclmnId = new TableColumn(table, SWT.CENTER);
-		tblclmnId.setResizable(false);
-		tblclmnId.setWidth(64);
-		tblclmnId.setText("ID");
+		
+		styledText = new StyledText(composite_1, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP);
+		styledText.setText("sddf <span color=red>dfsh</color> dbjsdhfjs jh df");
+		styledText.setIndent(3);
+		styledText.setMarginColor(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		styledText.setLeftMargin(10);
+		styledText.setEditable(false);
+		styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 	}
 
 }
