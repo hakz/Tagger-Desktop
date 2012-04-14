@@ -39,7 +39,7 @@ public class MaxentPOSTagger implements POSTagger{
 			if (!file.exists())
 				continue;
 
-			String filenameRegex = "[A-Z]{2,3}\\d{1,3}\\.txt";
+			String filenameRegex = "[A-Z]{2,3}\\d{1,3}-Q[0-9]*\\.txt";
 			if ( !Pattern.matches(filenameRegex, file.getName()))
 				continue;
 			

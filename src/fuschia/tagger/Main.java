@@ -1,6 +1,7 @@
 package fuschia.tagger;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import fuschia.tagger.ui.*;
 
