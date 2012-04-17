@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import fuschia.tagger.MaxentPOSTagger;
 import fuschia.tagger.Document;
+import fuschia.tagger.TaggerThread;
 
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -56,14 +57,15 @@ public class MainWindow {
 	private Composite composite_1;
 	private Label lblIds;
 	private Text txtQuery;
-	private Button btnSearch;
+	public Button btnSearch;
 	private Label lblNewLabel;
 	private Label lblResults;
 	private StyledText styledText;
 	TextStyle normalStyle = new TextStyle();
 	TextStyle tagStyle = new TextStyle();
-	private Map<String, Document> taggerResults;
-	
+	private static MainWindow _instance = null;
+	private Map<String, Document> taggerResult;
+
 	/**
 	 * @wbp.parser.entryPoint
 	 */
@@ -79,6 +81,17 @@ public class MainWindow {
 		}
 	}
 
+	public static MainWindow getInstance() {
+		if (_instance == null)
+			_instance = new MainWindow();
+		return _instance;
+	}
+	
+	public void log(String strLine) {
+		text.append(strLine);
+		text.append("---------"  + System.getProperty("line.separator"));
+	}
+	
 	public void showDocument(Document doc) {
 
 		int size = -1;
@@ -197,19 +210,12 @@ public class MainWindow {
 		btnProcess.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				try {
-					String strSelectedDir = txtDirectoryPath.getText();
-					taggerResults = MaxentPOSTagger.INSTANCE.extractTags(strSelectedDir);
-					text.append(strSelectedDir + System.getProperty("line.separator"));
-					text.append("---------"  + System.getProperty("line.separator"));
-					text.append(taggerResults.size()  + System.getProperty("line.separator"));
-
-
-					btnSearch.setEnabled(true);
-				} catch (Exception e) {
-					text.setText(e.toString());
-					btnSearch.setEnabled(false);
+				TaggerThread tagger = new TaggerThread(txtDirectoryPath.getText().trim());
+				tagger.start();
+				while(tagger.isAlive()) {
 				}
+				MainWindow.getInstance().taggerResult = tagger.result;
+				tagger = null;
 			}
 		});
 		btnProcess.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -242,12 +248,18 @@ public class MainWindow {
 		btnSearch.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				String key = txtQuery.getText().trim();
-				if (key.length() > 0) {
-					Document doc = taggerResults.get(key);
-					showDocument(doc);
-				} else {
-					showDocument(null);
+				try {
+					String strQuery = txtQuery.getText().trim();
+					if (strQuery!=null && strQuery.length() > 0) {
+						Document doc = taggerResult.get(strQuery);
+						MainWindow.getInstance().showDocument(doc);
+					} else {
+						MainWindow.getInstance().showDocument(null);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					MainWindow.getInstance().log(e.toString());
+					MainWindow.getInstance().btnSearch.setEnabled(false);
 				}
 			}
 		});
