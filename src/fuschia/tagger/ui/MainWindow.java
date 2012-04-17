@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.swt.widgets.Display;
@@ -46,7 +47,7 @@ public class MainWindow {
 	private Text txtDirectoryPath;
 	private Text text;
 	private Label lblDirectory;
-	private Button btnProcess, btnBrowse, btnSave;
+	private Button btnProcess, btnBrowse;
 	private TabFolder tabFolder;
 	private TabItem tbtmCopus;
 	private Composite composite;
@@ -125,6 +126,27 @@ public class MainWindow {
 			styledText.setStyleRange(styleRange);
 
 		}
+
+		styledText.append(System.getProperty("line.separator"));
+		styledText.append("-------------------");
+		styledText.append(System.getProperty("line.separator"));
+		
+		// TAG
+		for (Iterator<String> i = doc.cumulativeTags.keySet().iterator(); i.hasNext();) {
+			String key = i.next();
+			Integer value = doc.cumulativeTags.get(key);
+
+			String str = key + " = " + value + System.getProperty("line.separator");
+			styledText.append(str);
+			styleRange = new StyleRange();
+			styleRange.start = styledText.getText().length() - str.length() - 1;
+			styleRange.length = str.length();
+			styleRange.foreground = SWTResourceManager.getColor(0, 200, 0);
+			styleRange.fontStyle = SWT.ITALIC | SWT.BOLD;
+			styledText.setStyleRange(styleRange);			
+
+		}
+
 		
 	}
 	
@@ -183,11 +205,9 @@ public class MainWindow {
 					text.append(taggerResults.size()  + System.getProperty("line.separator"));
 
 
-					btnSave.setEnabled(true);
 					btnSearch.setEnabled(true);
 				} catch (Exception e) {
 					text.setText(e.toString());
-					btnSave.setEnabled(false);
 					btnSearch.setEnabled(false);
 				}
 			}
@@ -203,30 +223,6 @@ public class MainWindow {
 		text = new Text(composite, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
 		text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
 		text.setEditable(false);
-		new Label(composite, SWT.NONE);
-		new Label(composite, SWT.NONE);
-		new Label(composite, SWT.NONE);
-
-		btnSave = new Button(composite, SWT.NONE);
-		btnSave.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		btnSave.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent arg0) {
-				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-				String platform = SWT.getPlatform();
-				dialog.setFilterPath (platform.equals("win32") || platform.equals("wpf") ? "c:\\" : "/");
-				String strSelectedFile = dialog.open();
-				try {
-					BufferedWriter bw = new BufferedWriter(new FileWriter(new File(strSelectedFile)));
-					bw.write(text.getText());
-					bw.close();
-				} catch (Exception e) {
-					text.setText(e.toString());
-				}
-			}
-		});		
-		btnSave.setEnabled(false);
-		btnSave.setText("Save Output");
 
 		tbtmQuery = new TabItem(tabFolder, SWT.NONE);
 		tbtmQuery.setText("Query");
