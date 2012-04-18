@@ -54,9 +54,9 @@ public class MainWindow {
 	TextStyle normalStyle = new TextStyle();
 	TextStyle tagStyle = new TextStyle();
 	private static MainWindow _instance = null;
-	public Map<String, Document> taggerResult;
 	private Composite chartPlaceholder;
 	private Chart chart;
+	private TaggerThread taggerThread;
 
 	/**
 	 * @wbp.parser.entryPoint
@@ -79,9 +79,12 @@ public class MainWindow {
 		return _instance;
 	}
 	
+	public void setProgress(int percentage) {
+		this.progressBar.setSelection(percentage);
+	}
+	
 	public void log(String strLine) {
-		text.append(strLine);
-		text.append("---------"  + System.getProperty("line.separator"));
+		text.append(strLine + System.getProperty("line.separator"));
 	}
 	
 	public void showDocument(Document doc) {
@@ -228,8 +231,8 @@ public class MainWindow {
 		btnProcess.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				TaggerThread tagger = new TaggerThread(txtDirectoryPath.getText().trim());
-				tagger.start();
+				taggerThread = new TaggerThread(txtDirectoryPath.getText().trim());
+				taggerThread.start();
 			}
 		});
 		btnProcess.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -241,6 +244,7 @@ public class MainWindow {
 		progressBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 4, 1));
 
 		text = new Text(composite, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
+		text.setFont(SWTResourceManager.getFont("Monaco", 11, SWT.NORMAL));
 		text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
 		text.setEditable(false);
 
@@ -264,8 +268,8 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent arg0) {
 				try {
 					String strQuery = txtQuery.getText().trim();
-					if (strQuery!=null && strQuery.length() > 0) {
-						Document doc = taggerResult.get(strQuery);
+					if (taggerThread!=null && taggerThread.results!=null && strQuery!=null && strQuery.length() > 0) {
+						Document doc = taggerThread.results.get(strQuery);
 						MainWindow.getInstance().showDocument(doc);
 					} else {
 						MainWindow.getInstance().showDocument(null);
