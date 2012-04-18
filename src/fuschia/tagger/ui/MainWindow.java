@@ -54,7 +54,7 @@ public class MainWindow {
 	TextStyle normalStyle = new TextStyle();
 	TextStyle tagStyle = new TextStyle();
 	private static MainWindow _instance = null;
-	private Map<String, Document> taggerResult;
+	public Map<String, Document> taggerResult;
 	private Composite chartPlaceholder;
 
 	/**
@@ -227,10 +227,6 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent arg0) {
 				TaggerThread tagger = new TaggerThread(txtDirectoryPath.getText().trim());
 				tagger.start();
-				while(tagger.isAlive()) {
-				}
-				MainWindow.getInstance().taggerResult = tagger.result;
-				tagger = null;
 			}
 		});
 		btnProcess.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));

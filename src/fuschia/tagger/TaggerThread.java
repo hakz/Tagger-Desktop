@@ -7,10 +7,13 @@ package fuschia.tagger;
 
 import java.util.Map;
 
+import org.eclipse.swt.widgets.Display;
+
+import fuschia.tagger.ui.MainWindow;
+
 public class TaggerThread extends Thread {
 
 	private String strWorkingDirectory;
-	public Map<String, Document> result;
 	
 	
 	public TaggerThread(String strWorkingDirectory) {
@@ -20,17 +23,19 @@ public class TaggerThread extends Thread {
 
 
 	public void run() {
-		try {
-			result = MaxentPOSTagger.INSTANCE.extractTags(strWorkingDirectory);
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				try {
+					MainWindow.getInstance().taggerResult = MaxentPOSTagger.INSTANCE.extractTags(strWorkingDirectory);
 
-			//MainWindow.getInstance().log("OK!");
-			//MainWindow.getInstance().btnSearch.setEnabled(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-			result = null;
-			//MainWindow.getInstance().log(e.toString());
-			//MainWindow.getInstance().btnSearch.setEnabled(false);
-		}
-
+					MainWindow.getInstance().log("OK!");
+					MainWindow.getInstance().btnSearch.setEnabled(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+					MainWindow.getInstance().log(e.toString());
+					MainWindow.getInstance().btnSearch.setEnabled(false);
+				}
+			}
+		});
 	}
 }
