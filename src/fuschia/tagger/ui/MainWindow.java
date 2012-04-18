@@ -56,6 +56,7 @@ public class MainWindow {
 	private static MainWindow _instance = null;
 	public Map<String, Document> taggerResult;
 	private Composite chartPlaceholder;
+	private Chart chart;
 
 	/**
 	 * @wbp.parser.entryPoint
@@ -157,7 +158,9 @@ public class MainWindow {
 		}
 
         // create a chart
-        Chart chart = new Chart(chartPlaceholder, SWT.NONE);
+
+		if(chart!=null) chart.dispose();		
+		chart = new Chart(chartPlaceholder, SWT.NONE);
         chart.getLegend().setVisible(false);
 
         // set titles
