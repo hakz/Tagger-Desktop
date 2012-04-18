@@ -1,10 +1,5 @@
 package fuschia.tagger.ui;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -16,10 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -28,19 +20,17 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.TextStyle;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 
-import fuschia.tagger.MaxentPOSTagger;
 import fuschia.tagger.Document;
 import fuschia.tagger.TaggerThread;
 
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.swtchart.Chart;
+import org.swtchart.IBarSeries;
+import org.swtchart.ISeries.SeriesType;
 
 public class MainWindow {
 
@@ -65,6 +55,7 @@ public class MainWindow {
 	TextStyle tagStyle = new TextStyle();
 	private static MainWindow _instance = null;
 	private Map<String, Document> taggerResult;
+	private Composite chartPlaceholder;
 
 	/**
 	 * @wbp.parser.entryPoint
@@ -144,11 +135,16 @@ public class MainWindow {
 		styledText.append("-------------------");
 		styledText.append(System.getProperty("line.separator"));
 		
+		final double[] barChartValues = new double[doc.cumulativeTags.size()];
+		final String[] tagCategories = new String[doc.cumulativeTags.size()];
 		// TAG
+		int index = 0;
 		for (Iterator<String> i = doc.cumulativeTags.keySet().iterator(); i.hasNext();) {
 			String key = i.next();
 			Integer value = doc.cumulativeTags.get(key);
 
+			tagCategories[index] = key;
+			barChartValues[index++] = (double) value;
 			String str = key + " = " + value + System.getProperty("line.separator");
 			styledText.append(str);
 			styleRange = new StyleRange();
@@ -160,12 +156,31 @@ public class MainWindow {
 
 		}
 
-		
+        // create a chart
+        Chart chart = new Chart(chartPlaceholder, SWT.NONE);
+        chart.getLegend().setVisible(false);
+
+        // set titles
+        chart.getTitle().setText("Cumulative Tag Chart");
+        chart.getAxisSet().getXAxis(0).getTitle().setText("Tag");
+        chart.getAxisSet().getYAxis(0).getTitle().setText("Count");
+
+        chart.getAxisSet().getXAxis(0).setCategorySeries(tagCategories);
+        chart.getAxisSet().getXAxis(0).enableCategory(true);
+        // create bar series
+        IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR, "Count");
+        barSeries.setYSeries(barChartValues);
+
+        barSeries.setBarColor(SWTResourceManager.getColor(80, 200, 100));
+        
+        // adjust the axis range
+        chart.getAxisSet().adjustRange();
+
 	}
 	
 	protected void createContents() {
 		shell = new Shell();
-		shell.setSize(600, 400);
+		shell.setSize(600, 552);
 		shell.setText("Salar Word Tagger (Version 1.1)");
 		shell.setLayout(new FillLayout(SWT.HORIZONTAL));
 
@@ -272,6 +287,13 @@ public class MainWindow {
 		lblNewLabel.setFont(SWTResourceManager.getFont("Lucida Grande", 10, SWT.ITALIC));
 		lblNewLabel.setText("Examples: 1, 10-12");
 		new Label(composite_1, SWT.NONE);
+		
+		chartPlaceholder = new Composite(composite_1, SWT.NONE);
+		chartPlaceholder.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		chartPlaceholder.setLayout(new FillLayout(SWT.HORIZONTAL));
+		GridData gd_chartPlaceholder = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
+		gd_chartPlaceholder.heightHint = 200;
+		chartPlaceholder.setLayoutData(gd_chartPlaceholder);
 
 		lblResults = new Label(composite_1, SWT.NONE);
 		lblResults.setText("Results:");

@@ -6,6 +6,7 @@
 	<classpathentry kind="lib" path="lib/opennlp-tools-1.5.2-incubating.jar"/>
 	<classpathentry kind="lib" path="lib/opennlp-uima-1.5.2-incubating.jar"/>
 	<classpathentry kind="lib" path="lib/swt.jar"/>
+	<classpathentry kind="lib" path="lib/org.swtchart_0.8.0.v20120301.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
