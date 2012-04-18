@@ -40,7 +40,7 @@ public class TaggerThread extends Thread {
 		
 		File[] files = new File(rootPath).listFiles();
 
-		String filenameRegex = "[A-Z]{2,4}\\d{1,3}-Q[0-9]*\\.txt";
+		String filenameRegex = "[A-Z]{2,4}\\d{1,3}[BC]?(\\sunsure)?-Q[0-9]*\\.txt";
 		
 		for(File file : files) {
 			// Directories
