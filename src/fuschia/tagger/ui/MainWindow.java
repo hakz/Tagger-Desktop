@@ -289,7 +289,6 @@ public class MainWindow {
 		new Label(composite_1, SWT.NONE);
 		
 		chartPlaceholder = new Composite(composite_1, SWT.NONE);
-		chartPlaceholder.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		chartPlaceholder.setLayout(new FillLayout(SWT.HORIZONTAL));
 		GridData gd_chartPlaceholder = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
 		gd_chartPlaceholder.heightHint = 200;
