@@ -292,8 +292,7 @@ public class MainWindow {
 							}
 						};
 
-						ObjectOutputStream oosCompressed = new ObjectOutputStream(
-								gzipos);
+						ObjectOutputStream oosCompressed = new ObjectOutputStream(gzipos);
 						oosCompressed.writeObject(taggerThread.results);
 						oosCompressed.flush();
 						oosCompressed.close();
