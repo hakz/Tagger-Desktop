@@ -32,7 +32,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import fuschia.tagger.Document;
+import fuschia.tagger.common.Document;
+import fuschia.tagger.common.DocumentRepository;
 import fuschia.tagger.TaggerThread;
 
 import org.eclipse.swt.custom.StyleRange;
@@ -267,45 +268,12 @@ public class MainWindow {
 					if (taggerThread != null && taggerThread.results != null) {
 						FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 						String platform = SWT.getPlatform();
-						dialog.setFilterPath(platform.equals("win32")
-								|| platform.equals("wpf") ? "c:\\" : "/");
+						dialog.setFilterPath(platform.equals("win32") || platform.equals("wpf") ? "c:\\" : "/");
 						String strSelectedFile = dialog.open();
 						txtDirectoryPath.setText(strSelectedFile);
-						text.append("Saving generated map to "
-								+ strSelectedFile + " ...");
-						FileOutputStream fout = new FileOutputStream(
-								strSelectedFile);
-						ObjectOutputStream oos = new ObjectOutputStream(fout);
-						oos.writeObject(taggerThread.results);
-						oos.flush();
-						oos.close();
-						fout.close();
-						fout = null;
-						text.append("Done!");
-						text.append("Saving compressed map to "
-								+ strSelectedFile + ".gz ...");
-						fout = new FileOutputStream(new File(strSelectedFile
-								+ ".gz"), false);
-						GZIPOutputStream gzipos = new GZIPOutputStream(fout) {
-							{
-								def.setLevel(Deflater.BEST_COMPRESSION);
-							}
-						};
+						text.append("Saving generated map to " + strSelectedFile + " ...");
+						taggerThread.results.saveToFile(strSelectedFile);
 
-						ObjectOutputStream oosCompressed = new ObjectOutputStream(gzipos);
-						oosCompressed.writeObject(taggerThread.results);
-						oosCompressed.flush();
-						oosCompressed.close();
-						fout.close();
-						text.append("Done!");
-
-						/**
-						 * to read: 
-						 * ObjectInputStream ois = new
-						 * 	ObjectInputStream(new FileInputStream(new
-						 * 	 File("/Users/morteza/Desktop/survey1.cmap")));
-						 * Map<String, Document> m = (Map<String, Document>)ois.readObject();
-						 */
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -354,7 +322,7 @@ public class MainWindow {
 					String strQuery = txtQuery.getText().trim();
 					if (taggerThread != null && taggerThread.results != null
 							&& strQuery != null && strQuery.length() > 0) {
-						Document doc = taggerThread.results.get(strQuery);
+						Document doc = taggerThread.results.getDocument(strQuery);
 						MainWindow.getInstance().showDocument(doc);
 					} else {
 						MainWindow.getInstance().showDocument(null);

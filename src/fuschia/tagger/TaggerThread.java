@@ -21,12 +21,14 @@ import opennlp.tools.tokenize.WhitespaceTokenizer;
 
 import org.eclipse.swt.widgets.Display;
 
+import fuschia.tagger.common.Document;
+import fuschia.tagger.common.DocumentRepository;
 import fuschia.tagger.ui.MainWindow;
 
 public class TaggerThread extends Thread {
 
 	private String strWorkingDirectory;
-	public Map<String, Document> results;
+	public DocumentRepository results;
 
 	public TaggerThread(String strWorkingDirectory) {
 		super();
@@ -66,7 +68,7 @@ public class TaggerThread extends Thread {
 			public void run() {
 				try {
 
-					results = new HashMap<String, Document>();
+					results = new DocumentRepository();
 					POSModel model = new POSModelLoader().load(new File(
 							"resources/en-pos-maxent.bin"));
 					POSTaggerME tagger = new POSTaggerME(model);
@@ -108,10 +110,8 @@ public class TaggerThread extends Thread {
 						// POSSample sample = new POSSample(tokens, tags);
 						// String[] posTags = sample.getTags();
 
-						results.put(
-								file.getName().substring(0,
-										file.getName().length() - 4),
-								new Document(file.getName(), tokens, tags));
+						String documentId = file.getName().substring(0,file.getName().length() - 4);
+						results.addDocument(documentId, new Document(file.getName(), tokens, tags));
 					}
 
 					MainWindow.getInstance().setProgress(100);
