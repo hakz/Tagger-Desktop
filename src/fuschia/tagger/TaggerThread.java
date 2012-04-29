@@ -90,6 +90,8 @@ public class TaggerThread extends Thread {
 					sleep(10); // FIXME: Just to update logs view
 
 					int index = 0;
+					
+					String strSurveyPrefix = "";
 					for (File file : files) {
 
 						MainWindow.getInstance().setProgress(
@@ -110,7 +112,16 @@ public class TaggerThread extends Thread {
 						// POSSample sample = new POSSample(tokens, tags);
 						// String[] posTags = sample.getTags();
 
-						String documentId = file.getName().substring(0,file.getName().length() - 4);
+						if (file.getPath().indexOf("SURVEY 1") != -1)
+							strSurveyPrefix = "s1.";
+						else if (file.getPath().indexOf("SURVEY 2") != -1)
+							strSurveyPrefix = "s2.";
+						else if (file.getPath().indexOf("SURVEY 3") != -1)
+							strSurveyPrefix = "s3.";
+						else
+							strSurveyPrefix = ".";
+						
+						String documentId = strSurveyPrefix + file.getName().substring(0,file.getName().length() - 4);
 						results.addDocument(documentId, new Document(file.getName(), tokens, tags));
 					}
 
