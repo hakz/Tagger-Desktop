@@ -150,7 +150,6 @@ public class ConstrualProcessor extends Thread {
 						String vLine = "";
 						String aLine="";
 						if (verbCounts[q][1]+verbCounts[q][3]+verbCounts[q][5]>0) {
-							vLine +=verbCounts[q][0]+",";
 							vLine +=verbCounts[q][1]+","; // tag count (s1)
 							vLine +=verbCounts[q][2]+",";
 							vLine +=verbCounts[q][3]+","; // tag count (s2)
@@ -163,7 +162,6 @@ public class ConstrualProcessor extends Thread {
 							fVerbs.flush();
 						}
 						if (adjectiveCounts[q][1]+adjectiveCounts[q][3]+adjectiveCounts[q][5]>0) {
-							aLine +=adjectiveCounts[q][0]+",";
 							aLine +=adjectiveCounts[q][1]+",";
 							aLine +=adjectiveCounts[q][2]+",";
 							aLine +=adjectiveCounts[q][3]+",";
