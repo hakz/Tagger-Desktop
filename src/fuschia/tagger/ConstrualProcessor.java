@@ -87,8 +87,8 @@ public class ConstrualProcessor extends Thread {
 					
 					int surveyId = 0;
 					
-					int[][] verbCounts =new int[56][4];
-					int[][] adjectiveCounts =new int[56][4];
+					int[][] verbCounts =new int[56][7];
+					int[][] adjectiveCounts =new int[56][7];
 					
 					Pattern questionNumberPattern = Pattern.compile("[^0-9]+[0-9]+[^0-9]+([0-9]+)[^0-9]+");
 					int questionNumber = 0;
@@ -129,13 +129,13 @@ public class ConstrualProcessor extends Thread {
 
 						if (surveyId>0) {
 
-							verbCounts[questionNumber][0] += tags.length;
+							verbCounts[questionNumber][surveyId*2-1] += tags.length;
 							adjectiveCounts[questionNumber][0] += tags.length;
 							for (int i=0;i<tags.length;i++) {
 								if (tags[i].startsWith("VB")) {
-									verbCounts[questionNumber][surveyId]++;
+									verbCounts[questionNumber][surveyId*2]++;
 								} else if (tags[i].startsWith("JJ")) {
-									adjectiveCounts[questionNumber][surveyId]++;
+									adjectiveCounts[questionNumber][surveyId*2]++;
 								}
 							}							
 						}
@@ -149,21 +149,27 @@ public class ConstrualProcessor extends Thread {
 					for (int q=0; q< 56 ; q++) {
 						String vLine = "";
 						String aLine="";
-						if (verbCounts[q][0]>0) {
+						if (verbCounts[q][1]+verbCounts[q][3]+verbCounts[q][5]>0) {
 							vLine +=verbCounts[q][0]+",";
-							vLine +=verbCounts[q][1]+",";
+							vLine +=verbCounts[q][1]+","; // tag count (s1)
 							vLine +=verbCounts[q][2]+",";
-							vLine +=verbCounts[q][3];							
+							vLine +=verbCounts[q][3]+","; // tag count (s2)
+							vLine +=verbCounts[q][4]+",";
+							vLine +=verbCounts[q][5]+","; // tag count (s3)
+							vLine +=verbCounts[q][6];							
 
 							fVerbs.write(String.valueOf(q) + "," + vLine);
 							fVerbs.newLine();
 							fVerbs.flush();
 						}
-						if (adjectiveCounts[q][0]>0) {
+						if (adjectiveCounts[q][1]+adjectiveCounts[q][3]+adjectiveCounts[q][5]>0) {
 							aLine +=adjectiveCounts[q][0]+",";
 							aLine +=adjectiveCounts[q][1]+",";
 							aLine +=adjectiveCounts[q][2]+",";
-							aLine +=adjectiveCounts[q][3];
+							aLine +=adjectiveCounts[q][3]+",";
+							aLine +=adjectiveCounts[q][4]+",";
+							aLine +=adjectiveCounts[q][5]+",";
+							aLine +=adjectiveCounts[q][6];
 							fAdjectives.write(String.valueOf(q) + "," + aLine);
 							fAdjectives.newLine();
 							fAdjectives.flush();
