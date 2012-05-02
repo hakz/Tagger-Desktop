@@ -130,7 +130,7 @@ public class ConstrualProcessor extends Thread {
 						if (surveyId>0) {
 
 							verbCounts[questionNumber][surveyId*2-1] += tags.length;
-							adjectiveCounts[questionNumber][0] += tags.length;
+							adjectiveCounts[questionNumber][surveyId*2-1] += tags.length;
 							for (int i=0;i<tags.length;i++) {
 								if (tags[i].startsWith("VB")) {
 									verbCounts[questionNumber][surveyId*2]++;
