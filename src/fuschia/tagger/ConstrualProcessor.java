@@ -104,8 +104,6 @@ public class ConstrualProcessor extends Thread {
 						if(m.find()){
 							questionNumber = Integer.valueOf(m.group(1));
 							// mark question for writing to the output file
-							verbCounts[questionNumber][0] = 1;
-							adjectiveCounts[questionNumber][0] = 1;							
 						}
 						m.reset();
 						
@@ -127,7 +125,12 @@ public class ConstrualProcessor extends Thread {
 						lineScanner = null;
 						String tokens[] = WhitespaceTokenizer.INSTANCE.tokenize(txt);
 						String[] tags = tagger.tag(tokens);
+
+
 						if (surveyId>0) {
+
+							verbCounts[questionNumber][0] += tags.length;
+							adjectiveCounts[questionNumber][0] += tags.length;
 							for (int i=0;i<tags.length;i++) {
 								if (tags[i].startsWith("VB")) {
 									verbCounts[questionNumber][surveyId]++;
@@ -146,7 +149,8 @@ public class ConstrualProcessor extends Thread {
 					for (int q=0; q< 56 ; q++) {
 						String vLine = "";
 						String aLine="";
-						if (verbCounts[q][0]==1) {
+						if (verbCounts[q][0]>0) {
+							vLine +=verbCounts[q][0]+",";
 							vLine +=verbCounts[q][1]+",";
 							vLine +=verbCounts[q][2]+",";
 							vLine +=verbCounts[q][3];							
@@ -155,7 +159,8 @@ public class ConstrualProcessor extends Thread {
 							fVerbs.newLine();
 							fVerbs.flush();
 						}
-						if (adjectiveCounts[q][0]==1) {
+						if (adjectiveCounts[q][0]>0) {
+							aLine +=adjectiveCounts[q][0]+",";
 							aLine +=adjectiveCounts[q][1]+",";
 							aLine +=adjectiveCounts[q][2]+",";
 							aLine +=adjectiveCounts[q][3];
