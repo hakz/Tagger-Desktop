@@ -5,15 +5,12 @@
  */
 package fuschia.tagger;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,13 +20,18 @@ import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.tokenize.WhitespaceTokenizer;
 
-import fuschia.tagger.common.Document;
 import fuschia.tagger.common.DocumentRepository;
 
 public class ConstrualProcessor extends Thread {
 
 	private String strWorkingDirectory;
 	public DocumentRepository results;
+
+	public static void main(String[] args) {
+		ConstrualProcessor construal = new ConstrualProcessor("/Volumes/Personal HD/Friends/Salar/");
+		construal.start();
+		while(construal.isAlive()){}		
+	}
 
 	public ConstrualProcessor(String strWorkingDirectory) {
 		super();
@@ -134,7 +136,9 @@ public class ConstrualProcessor extends Thread {
 							for (int i=0;i<tags.length;i++) {
 								if (tags[i].startsWith("VB")) {
 									verbCounts[questionNumber][surveyId*2]++;
-								} else if (tags[i].startsWith("JJ")) {
+								} else if (tags[i].startsWith("JJ")
+											|| tags[i].startsWith("RB")
+											|| tags[i].startsWith("WRB")) {
 									adjectiveCounts[questionNumber][surveyId*2]++;
 								}
 							}							

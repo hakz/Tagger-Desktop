@@ -322,7 +322,7 @@ public class MainWindow {
 					String strQuery = txtQuery.getText().trim();
 					if (taggerThread != null && taggerThread.results != null
 							&& strQuery != null && strQuery.length() > 0) {
-						Document doc = taggerThread.results.getDocument(strQuery);
+						Document doc = taggerThread.results.getDocumentById(strQuery);
 						MainWindow.getInstance().showDocument(doc);
 					} else {
 						MainWindow.getInstance().showDocument(null);
